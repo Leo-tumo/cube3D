@@ -45,9 +45,6 @@ clean:
 	@cd $(LIBMLX_DIR) && $(MAKE) $(CLEAN)
 	@$(DEL) $(OBJ)
 	@tput setaf 45 && echo "\tALL\t\tCLEARED"
-#@cd errors_check && $(DEL) *.o
-#@cd parser && $(DEL) *.o
-#@cd utils && $(DEL) *.o
 
 fclean: clean
 	@$(DEL) $(NAME) ./libft.a ./libmlx.dylib

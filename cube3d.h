@@ -7,6 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#define PI 3.14159265359
+#define W 13
+#define A 0
+#define S 1
+#define D 2
+
+
 typedef struct s_data {
 	void	*img;
 	void	*mlx;
@@ -26,6 +33,9 @@ typedef struct	s_vars {
 	void	*win;
 	int		color;
 }				t_vars;
+
+t_data data;
+
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color);
 int	    key_hook(int keycode/*, t_vars *vars*/);
