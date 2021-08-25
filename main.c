@@ -1,12 +1,33 @@
 #include "cube3d.h"
 #include <stdio.h>
 
-float px, py, pdx, pdy, pa;
+double px, py, pdx, pdy, pa;
 
 int keypress(int keycode);
 
 
-
+void	draw_ray()
+{
+	
+	double i, j, a, k;
+	k = 1;
+	double pdx1, pdy1;
+	a = pa - 0.75;
+	while(a <= (pa + 0.75))
+	{
+		while (k < 20)
+		{
+			pdx1 = cos(a)*5;
+			pdy1 = sin(a)*5;
+			i = px + 4.5 + (pdx1 * k)  /* * 5 */;
+			j = py + 4.5 + (pdy1 * k)  /* * 5 */;
+			my_mlx_pixel_put(&data, i, j, 0x00FFFF00);
+			k += 0.1;
+		}
+		printf("a = %f\n", a);
+		a += 0.1;
+	}
+}
 
 void	drawPlayer()
 {
@@ -23,29 +44,18 @@ void	drawPlayer()
 		}
 		--i;
 	}
-	i = px + 4 + pdx * 5;
-	j = py + 4 + pdy * 5;
+	draw_ray();
+	// double k;
+	// k = 1;
 	
-	float delx, dely, count = 0;
-	// delx = fabs(i - px + 4);
-	// dely = fabs(j - py + 4);
-	delx = (i - px)/ 10;
-	dely = (j - py)/ 10;
-	i = px + 4;
-	j = py + 4;
-	do{
-		my_mlx_pixel_put(&data, i, j, 0x00FFFF00);
-		i += delx;
-		j += dely;
-		count += 0.1;
-		// delay(30);
-	}while(count <= 5);
+	// while (k < 20)
+	// {
+	// 	i = px + 4.5 + (pdx * k) /* * 5 */;
+	// 	j = py + 4.5 + (pdy * k) /* * 5 */;
+	// 	my_mlx_pixel_put(&data, i, j, 0x00FFFF00);
+	// 	k += 0.1;
+	// }
 }
-
-
-	
-
-
 
 
 
@@ -128,7 +138,7 @@ int		keypress(int keycode /* , t_data *data */)
 	
 	if(keycode == 0) /* A */
 		{
-			pa -= 0.1;
+			pa -= PI/32;
 			if(pa < 0)
 				pa += 2*PI;
 			pdx = cos(pa) * 5;
@@ -136,7 +146,7 @@ int		keypress(int keycode /* , t_data *data */)
 		}   
 	if(keycode == 2) /* D */
 		{
-			pa += 0.1;
+			pa += PI/32;
 			if(pa > 2*PI)
 				pa -= 2*PI;
 			pdx = cos(pa) * 5;
@@ -152,7 +162,7 @@ int		keypress(int keycode /* , t_data *data */)
 			px -= pdx;
 			py -= pdy;
 		}
-	printf("keycode =%d\n", keycode);
+	printf("pa =%f\n", pa);
 	
 	if(keycode == 53)
 		exit(0);

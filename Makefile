@@ -37,8 +37,12 @@ $(LIBMLX):
 %.o: %.c
 	@$(CC) $(FLAG) $(OPTION) $< $(OPTION_OBJ) $@
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re l
 
+
+l: all
+	@./cube3D
+	
 clean:
 	@$(DEL) $(OBJS)
 	@cd $(LIBFT_DIR) && $(MAKE) $(CLEAN)
