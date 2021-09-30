@@ -8,10 +8,13 @@ MAKE 			= make
 CLEAN 			= clean
 FCLEAN 			= fclean
 SRC				= main.c\
-				rainbow.c
+				utils_1.c\
+				utils_3.c\
+				utils_2.c
+				
 OBJ 			= $(SRC:.c=.o)
 CC				= gcc
-FLAG			= -Wall -Werror -Wextra -g -O0
+FLAG			= #-Wall -Werror -Wextra -g -O0
 FLAGMLX			= -framework OpenGL -framework AppKit
 OPTION 			= -c -D GL_SILENCE_DEPRECATION 
 OPTION_OBJ		= -o
