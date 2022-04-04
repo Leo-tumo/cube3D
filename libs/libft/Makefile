@@ -6,7 +6,7 @@
 #    By: letumany <letumany@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/02/01 20:20:25 by letumany          #+#    #+#              #
-#    Updated: 2021/08/01 21:59:05 by letumany         ###   ########.fr        #
+#    Updated: 2021/07/30 22:19:58 by letumany         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,12 +21,21 @@ RM			= rm -rf
 CFLAGS		= -Wall -Wextra -Werror
 AR			= ar csr
 
-
-$(NAME) : $(OBJS) $(HEADER)
-	@$(AR) $(NAME) $(OBJS)
+#colors
+COM_COLOR   = \033[0;34m
+OBJ_COLOR   = \033[0;36m
+OK_COLOR    = \033[0;32m
+ERROR_COLOR = \033[0;31m
+WARN_COLOR  = \033[0;33m
+NO_COLOR    = \033[m
 
 %.o: %.c 
-	@$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
+	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
+
+$(NAME) : $(OBJS) $(HEADER)
+	@${AR} ${NAME} ${OBJS}
+# @echo "$(WARN_COLOR)\t $(NAME)\t$(OK_COLOR)[CREATED]$(NO_COLOR)";
+
 
 all : $(NAME)
 

@@ -1,261 +1,184 @@
-#include "cube3d.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: letumany <letumany@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/14 12:50:26 by letumany          #+#    #+#             */
+/*   Updated: 2021/10/06 13:34:33 by letumany         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int map[24][24] = {
-        
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
-            {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,0,3,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,0,0,0,0,2,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,0,3,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-        };
+#include "cub3d.h"
 
-void draw(/* void *mlx_ptr, void *mlx_win_ptr */)
+/*
+** malloc arrays for sprite
+*/
+static	void		malloc_arrays(t_cub *cub)
 {
-    
-
-    dcoor.posX = 22.0;
-    dcoor.posY = 12.0;  //x and y start position
-    dcoor.dirX = -1.0;
-    dcoor.dirY = 0.0; //initial direction vector
-    dcoor.planeX = 0.0; 
-    dcoor.planeY = 0.66;
-    for(int x = 0; x < 1040; x++)
-    {
-      //calculate ray position and direction
-      double cameraX = 2 * x / (double)1040 - 1; //x-coordinate in camera space
-      double rDX = dcoor.dirX + dcoor.planeX*cameraX;
-      double rDY = dcoor.dirY + dcoor.planeY*cameraX;
-
-      //which box of the map we're in
-      coor.mapX = (int)dcoor.posX;
-      coor.mapY = (int)dcoor.posY;
-
-      //length of ray from current position to next x or y-side
-      double sideDistX;
-      double sideDistY;
-
-      //length of ray from one x or y-side to next x or y-side
-      double deltaDistX = (rDX == 0) ? 1e30 : fabs(1 / rDX);
-      double deltaDistY = (rDY == 0) ? 1e30 : fabs(1 / rDY);
-      double perpWallDist;
-
-      //what direction to step in x or y-direction (either +1 or -1)
-      int stepX;
-      int stepY;
-
-      int hit = 0; //was there a wall hit?
-      int side; //was a NS or a EW wall hit?
-
-      //calculate step and initial sideDist
-      if(rDX < 0)
-      {
-        stepX = -1;
-        sideDistX = (dcoor.posX - coor.mapX) * deltaDistX;
-      }
-      else
-      {
-        stepX = 1;
-        sideDistX = (coor.mapX + 1.0 - dcoor.posX) * deltaDistX;
-      }
-      if(rDY < 0)
-      {
-        stepY = -1;
-        sideDistY = (dcoor.posY - coor.mapY) * deltaDistY;
-      }
-      else
-      {
-        stepY = 1;
-        sideDistY = (coor.mapY + 1.0 - dcoor.posY) * deltaDistY;
-      }
-      //perform DDA
-      while (hit == 0)
-      {
-        //jump to next map square, either in x-direction, or in y-direction
-        if(sideDistX < sideDistY)
-        {
-          sideDistX += deltaDistX;
-          coor.mapX += stepX;
-          side = 0;
-        }
-        else
-        {
-          sideDistY += deltaDistY;
-          coor.mapY += stepY;
-          side = 1;
-        }
-        //Check if ray has hit a wall
-        if(map[coor.mapX][coor.mapY] > 0) hit = 1;
-      }
-
-      //Calculate distance of perpendicular ray (Euclidean distance would give fisheye effect!)
-      if(side == 0) perpWallDist = (sideDistX - deltaDistX);
-      else          perpWallDist = (sideDistY - deltaDistY);
-
-      //Calculate height of line to draw on screen
-    //   int lineHeight = (int)(540 / perpWallDist);
-
-
-    //   int pitch = 100;
-
-      //calculate lowest and highest pixel to fill in current stripe
-    //   int drawStart = -lineHeight / 2 + h / 2 + pitch;
-    //   if(drawStart < 0) drawStart = 0;
-    //   int drawEnd = lineHeight / 2 + h / 2 + pitch;
-    //   if(drawEnd >= h) drawEnd = h - 1;
-
-      //texturing calculations
-    //   int texNum = data.coor.macoor.mapY] - 1; //1 subtracted from it so that texture 0 can be used!
-
-    //   //calculate value of wallX
-    //   double wallX; //where exactly the wall was hit
-    //   if(side == 0) wallX = dcoor.posY + perpWallDist * rDY;
-    //   else          wallX = dcoor.posX + perpWallDist * rDX;
-    //   wallX -= floor((wallX));
-
-      int lineHeight = (int)(540 / perpWallDist);
-
-      //calculate lowest and highest pixel to fill in current stripe
-      int drawStart = -lineHeight / 2 + 540 / 2;
-      if(drawStart < 0) drawStart = 0;
-      int drawEnd = lineHeight / 2 + 540 / 2;
-      if(drawEnd >= 540) drawEnd = 540 - 1;
-
-      //x coordinate on the texture
-    //   int texX = int(wallX * double(texWidth));
-    //   if(side == 0 && rDX > 0) texX = texWidth - texX - 1;
-    //   if(side == 1 && rDY < 0) texX = texWidth - texX - 1;
-
-      // TODO: an integer-only bresenham or DDA like algorithm could make the texture coordinate stepping faster
-      // How much to increase the texture coordinate per screen pixel
-    //   double step = 1.0 * texHeight / lineHeight;
-    //   // Starting texture coordinate
-    //   double texPos = (drawStart - pitch - h / 2 + lineHeight / 2) * step;
-
-    int color;
-    // 
-    switch (map[coor.mapX][coor.mapY])
-    {
-        case 1:
-            color = 0x00FF0000;
-            break;
-        case 2:
-            color = 0x0000FF00;
-            break;
-        case 3:
-            color = 0x000000FF;
-            break;
-        
-        default:
-            color = 0x00000000;
-            break;
-    }
-      for(int y = drawStart; y < drawEnd; y++)
-      {
-          mlx_pixel_put(data.mlx, data.win, x, y, color);
-      }
-  }
-
-    // drawBuffer(buffer[0]);
-    // for(int y = 0; y < h; y++) for(int x = 0; x < w; x++) buffer[y][x] = 0; //clear the buffer instead of cls()
-    //timing for input and FPS counter
-    // oldTime = time;
-    // time = getTicks();
-    // double frameTime = (time - oldTime) / 1000.0; //frametime is the time this frame has taken, in seconds
-    // print(1.0 / frameTime); //FPS counter
-    // redraw();
-
-    
+	if (!(cub->x = malloc(sizeof(float) * cub->p.coll_sprite)))
+		error("Error\nNo memory allocated", cub);
+	if (!(cub->y = malloc(sizeof(float) * cub->p.coll_sprite)))
+		error("Error\nNo memory allocated", cub);
+	if (!(cub->dist = malloc(sizeof(float) * cub->p.coll_sprite)))
+		error("Error\nNo memory allocated", cub);
+	if (!(cub->close_sprite = malloc(sizeof(double) * cub->p.res_w)))
+		error("Error\nNo memory allocated", cub);
 }
 
-//     readKeys();
-  int   keypress(int key)
-  {
-//     //move forward if no wall in front of you
-    if(key == 'W')
-    {
-      if(map[(int)(dcoor.posX + dcoor.dirX * cam.moveSpeed)][(int)(dcoor.posY)] == 0) dcoor.posX += dcoor.dirX * cam.moveSpeed;
-      if(map[(int)(dcoor.posX)][(int)(dcoor.posY + dcoor.dirY * cam.moveSpeed)] == 0) dcoor.posY += dcoor.dirY * cam.moveSpeed;
-    }
-//     //move backwards if no wall behind you
-    if(key == 'S')
-    {
-      if(map[(int)(dcoor.posX - dcoor.dirX * cam.moveSpeed)][(int)(dcoor.posY)] == 0) dcoor.posX -= dcoor.dirX * cam.moveSpeed;
-      if(map[(int)(dcoor.posX)][(int)(dcoor.posY - dcoor.dirY * cam.moveSpeed)] == 0) dcoor.posY -= dcoor.dirY * cam.moveSpeed;
-    }
-    //rotate to the right
-    if(key == 'D')
-    {
-      //both camera direction and camera plane must be rotated
-      double oDX = dcoor.dirX;
-      dcoor.dirX = dcoor.dirX * cos(-cam.rotSpeed) - dcoor.dirY * sin(-cam.rotSpeed);
-      dcoor.dirY = oDX * sin(-cam.rotSpeed) + dcoor.dirY * cos(-cam.rotSpeed);
-      double oPX = dcoor.planeX;
-      dcoor.planeX = dcoor.planeX * cos(-cam.rotSpeed) - dcoor.planeY * sin(-cam.rotSpeed);
-      dcoor.planeY = oPX * sin(-cam.rotSpeed) + dcoor.planeY * cos(-cam.rotSpeed);
-    }
-    //rotate to the left
-    if(key == 'A')
-    {
-      //both camera direction and camera plane must be rotated
-      double oDX = dcoor.dirX;
-      dcoor.dirX = dcoor.dirX * cos(cam.rotSpeed) - dcoor.dirY * sin(cam.rotSpeed);
-      dcoor.dirY = oDX * sin(cam.rotSpeed) + dcoor.dirY * cos(cam.rotSpeed);
-      double oPX = dcoor.planeX;
-      dcoor.planeX = dcoor.planeX * cos(cam.rotSpeed) - dcoor.planeY * sin(cam.rotSpeed);
-      dcoor.planeY = oPX * sin(cam.rotSpeed) + dcoor.planeY * cos(cam.rotSpeed);
-    }
-    if(key == 53)
-    {
-      exit(0);
-    }
-    return 0;
-  }
-
-/* 
-int *syncfunc(void *param)
+/*
+** print sprite
+*/
+static	void		print_sprite(t_cub *cub)
 {
-    draw();
+	t_print_sprite		s;
+	int					i;
+	int					y;
+	int					stripe;
 
-} */
-int func()
+	i = -1;
+	while (++i < cub->p.coll_sprite)
+	{
+		set_sprite(cub, &s, &i);
+		stripe = s.draw_start_x;
+		while (stripe < s.draw_end_x)
+		{
+			s.tex_x = (int)(256 * (stripe - (-s.sprite_width / 2
+			+ s.sprite_screen_x)) * TEXWIDTH / s.sprite_width) / 256;
+			if (s.transform_y > 0 && stripe > 0 && stripe < cub->p.res_w
+						&& s.transform_y < cub->close_sprite[stripe])
+			{
+				print_sprite_part(cub, &s, &y, &stripe);
+			}
+			++stripe;
+		}
+	}
+}
+
+/*
+** print map
+*/
+static	void		print_map(t_cub *cub)
 {
-	draw();
-	mlx_put_image_to_window(data.mlx, data.win, data.img, 400, 500);
+	t_print_map			n;
+	int					x;
+	int					y;
+
+	cub->data.img = mlx_new_image(cub->mlx, cub->p.res_w, cub->p.res_l);
+	cub->data.addr = mlx_get_data_addr(cub->data.img,
+	&cub->data.bits_per_pixel, &cub->data.line_length, &cub->data.endian);
+	x = -1;
+	while (++x < cub->p.res_w)
+	{
+		set_cam_ray_mapxy(&n, &x, cub);
+		calc_step_start(&n, cub);
+		while (n.hit == 0)
+			check_hit(&n, cub);
+		calc_more(&n, cub, &x);
+		n.step = 1.0 * TEXHEIGHT / n.line_height;
+		n.tex_pos = (n.draw_start - cub->p.res_l
+				/ 2 + n.line_height / 2) * n.step;
+		y = -1;
+		while (++y < cub->p.res_l)
+			side_world(&n, cub, &x, &y);
+	}
+	sort_sprite(cub);
+	print_sprite(cub);
+	mlx_put_image_to_window(cub->mlx, cub->mlx_win, cub->data.img, 0, 0);
+}
+
+int key_press_hook(int keycode, t_cub *cub)
+{
+	if (keycode == 13)
+		keys.up = 1;
+	if (keycode == 1)
+		keys.down = 1;
+	if (keycode == 0)
+		keys.left = 1;
+	if (keycode == 2)
+		keys.right = 1;
+	if (keycode == 124)
+		keys.turn_right = 1;
+	if (keycode == 123)
+		keys.turn_left = 1;
+	if (keycode == 53)
+		close_win(cub);
+	return 0;
+}
+
+int key_release_hook(int keycode)
+{
+	if (keycode == 13)
+		keys.up = 0;
+	if (keycode == 1)
+		keys.down = 0;
+	if (keycode == 0)
+		keys.left = 0;
+	if (keycode == 2)
+		keys.right = 0;
+	if (keycode == 124)
+		keys.turn_right = 0;
+	if (keycode == 123)
+		keys.turn_left = 0;
+	return 0;
+}
+
+/*
+** keyboard input
+*/
+static	int			key_hook(t_cub *cub)
+{
+	mlx_destroy_image(cub->mlx, cub->data.img);
+	if (keys.up)
+		move_up(cub, 0.1);
+	if (keys.down)
+		move_back(cub, 0.1);
+	if (keys.left)
+		move_left(cub, 0.1);
+	if (keys.right)
+		move_right(cub, 0.1);
+	if (keys.turn_right)
+		turn_right(cub, 0.06);
+	if (keys.turn_left)
+		turn_left(cub, 0.06);
+	print_map(cub);
 	return (0);
 }
 
-int main(int argc, char **argv)
+/*
+** start cub3d
+*/
+void				start_cub3d(t_cub *cub, int argc)
 {
-    // void *mlx_ptr;
-    // void *mlx_win_ptr;
+	cub->plr.y = (double)cub->p.playr_y + 0.5;
+	cub->plr.x = (double)cub->p.playr_x + 0.5;
+	cub->p.coll_sprite = counting_sprites(cub);
+	malloc_arrays(cub);
+	save_position_sprites(cub);
+	set_dir_plr(cub);
+	cub->mlx = mlx_init();
+	cub->mlx_win = mlx_new_window(cub->mlx, cub->p.res_w, cub->p.res_l, "cub3D");
+	get_sprite(cub);
+	print_map(cub);
+	if (argc == 3)
+		screenshot(cub);
+	else
+	{
+		mlx_hook(cub->mlx_win, 2, 1L << 0, key_press_hook, cub);
+		mlx_hook(cub->mlx_win, 3, 1L << 0, key_release_hook, cub);
+		mlx_hook(cub->mlx_win, 17, 1L << 0, close_win, cub);
+		mlx_loop_hook(cub->mlx, key_hook, cub);
+		mlx_loop(cub->mlx);
+	}
+}
 
-    data.mlx = mlx_init();
-    data.win = mlx_new_window(data.mlx,  1040 , 540 ,  "title" );
-    data.img = mlx_new_image(data.mlx, 1040, 540);
-    data.addr = mlx_get_data_addr(data.img, &data.bits_per_pixel, &data.line_length, &data.endian);
-    mlx_hook(data.win, 2, (1L << 0), keypress, &data);
-    mlx_key_hook(data.win, keypress, &data);
-    // draw(data.mlx, data.win);
-    mlx_loop_hook(data.mlx, func, &data);
-    mlx_do_sync(data.mlx);
-    mlx_loop(data.mlx);
+int	main(int argc, char **argv)
+{
+	t_cub		cub;
+
+	check_errors_arg(argc, argv, &cub);
+	parser(argv, &cub);
+	start_cub3d(&cub, argc);
+	return (0);
 }
